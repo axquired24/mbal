@@ -22,14 +22,11 @@ class DocumentsController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index()
     {
-         $tahuns = DB::table('documents')
-                  ->select('tahun')->distinct()->get();
-         $documents = Document::all();
-                     
-        return view('documents.index', compact('tahuns','documents'));
+        $documents = Document::orderBy('tahun', 'DESC')->get()->groupBy('tahun');
+        return view('documents.index', compact('documents'));
     }
 
     /**
@@ -59,8 +56,8 @@ class DocumentsController extends Controller
             $request->file->move('storage/', $filename);
 
             $document->file = $filename;
-        } 
-     
+        }
+
         $document->title=$request->title;
         $document->tahun=$request->tahun;
         $document->description=$request->desc;
@@ -128,7 +125,7 @@ class DocumentsController extends Controller
                       'title' => $request->title,
                       'description'  => $request->desc,
                   ]);
-                                                         
+
         return redirect('/documents')->with('success','Dokumen berhasil di update');
     }
 
